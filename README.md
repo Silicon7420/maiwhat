@@ -1,14 +1,11 @@
-# astrbot-plugin-helloworld
-
-AstrBot 插件模板 / A template plugin for AstrBot plugin feature
+#   maiwhat? / mai什么?
 
 > [!NOTE]
-> This repo is just a template of [AstrBot](https://github.com/AstrBotDevs/AstrBot) Plugin.
+> 这是一个用Gemini优雅码风生成的根据定数找歌的简陋软件，一样使用，其实是我单纯测试下Vibe Coding Astrbot插件的产物罢了，其实Google Spark挺不错的 xD
 > 
-> [AstrBot](https://github.com/AstrBotDevs/AstrBot) is an agentic assistant for both personal and group conversations. It can be deployed across dozens of mainstream instant messaging platforms, including QQ, Telegram, Feishu, DingTalk, Slack, LINE, Discord, Matrix, etc. In addition, it provides a reliable and extensible conversational AI infrastructure for individuals, developers, and teams. Whether you need a personal AI companion, an intelligent customer support agent, an automation assistant, or an enterprise knowledge base, AstrBot enables you to quickly build AI applications directly within your existing messaging workflows.
+> [maiwhat?](https://github.com/Silicon7420/maiwhat)是一个大量AI少量人工的东西，你要说人工干了什么...... 负责给数据来源喂它开发文档xD 我说Google Pro会员真有用吧，当然也有人建议我上DS Harness和Codex(from Jiuuu),However, 下次再试()
 
 # Supports
 
 - [AstrBot Repo](https://github.com/AstrBotDevs/AstrBot)
-- [AstrBot Plugin Development Docs (Chinese)](https://docs.astrbot.app/dev/star/plugin-new.html)
-- [AstrBot Plugin Development Docs (English)](https://docs.astrbot.app/en/dev/star/plugin-new.html)
+- [maiwhat Repo](https://github.com/Silicon7420/maiwhat)
