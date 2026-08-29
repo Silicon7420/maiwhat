@@ -1,6 +1,5 @@
 import json
 import math
-import os
 import urllib.request
 from typing import List, Dict, Optional, Tuple
 
@@ -9,15 +8,28 @@ from astrbot.api.star import Context, Star, register
 from astrbot.api import logger
 
 
-@register("maiwhat", "Srylicon with Spark", "舞萌DX单曲Rating推荐插件", "1.0.0")
+@register("maiwhat", "Srylicon with Spark*", "舞萌DX单曲Rating推荐插件", "1.0.0")
 class MaiWhatPlugin(Star):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.music_data: List[Dict] = []
+        self._load_music_data()
+
     def _load_music_data(self):
-        url = "https://www.diving-fish.com/api/maimaidxprober/music_data"
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.0.0.0"}) #问就是我自己的UA(xD
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            self.music_data = json.loads(resp.read().decode("utf-8"))
-        with open(self.music_data_file, "w", encoding="utf-8") as f:
-                json.dump(self.music_data, f, ensure_ascii=False, indent=2)
+        """从官方公开接口拉取歌曲数据，还有这么复杂一串UA那只能是我的UA了pff"""
+        try:
+            url = "https://www.diving-fish.com/api/maimaidxprober/music_data"
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.0.0.0" 
+                },
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                self.music_data = json.loads(resp.read().decode("utf-8"))
+            logger.info(f"[maiwhat] 成功从 API 获取 {len(self.music_data)} 首曲目数据")
+        except Exception as e:
+            logger.error(f"[maiwhat] 从 API 获取歌曲数据失败: {e}")
 
     @staticmethod
     def _calc_min_ach_for_ra(ds: float, target_ra: int) -> Tuple[Optional[str], Optional[int]]:
@@ -79,6 +91,12 @@ class MaiWhatPlugin(Star):
             yield event.plain_result(f"⚠️ 舞萌 DX 当前最高单曲 Rating 理论值为 337（15.0 SSS+），输入的 {target_ra} 超出范围。")
             return
 
+        if not self.music_data:
+            self._load_music_data()
+            if not self.music_data:
+                yield event.plain_result("❌ 歌曲数据未获取成功，请检查网络连接或稍后重试。")
+                return
+
         matched_charts = []
         for song in self.music_data:
             title = song.get("title", "")
@@ -102,13 +120,17 @@ class MaiWhatPlugin(Star):
         if not matched_charts:
             yield event.plain_result(f"未找到可达到单曲 Rating >= {target_ra} 的曲目。")
             return
-        #排序模块| limit 限制输出 | selceted列表
+
+        # 按定数等级从低到高排序，定数相同按曲名排序
         matched_charts.sort(key=lambda x: (x["ds"], x["name"]))
+
+        # 选取前 20 首推荐曲目
         display_limit = 20
         selected = matched_charts[:display_limit]
 
         lines = [f"🎯 达到单曲 Rating ≥ {target_ra} 推荐曲目（共找到 {len(matched_charts)} 个谱面，按等级从小到大）：\n"]
         for item in selected:
+            # 格式： "歌曲名" 等级 达成值
             lines.append(f'"{item["name"]}" {item["level_str"]} {item["ach"]}')
 
         if len(matched_charts) > display_limit:
