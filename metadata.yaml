@@ -1,6 +1,6 @@
 name: maiwhat #程序注册名
 display_name: mai什么? #程序显示在Astrbot的名字
-desc: Help switch mai什么 #introduction (short
+desc: Help switch mai什么 #introduction
 version: v1.0 
 author: Srylicon 
 repo: https://github.com/Slicon7420/maiwhat 
